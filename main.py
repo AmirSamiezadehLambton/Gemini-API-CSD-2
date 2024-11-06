@@ -1,3 +1,7 @@
+# pip install -q -U google-generativeai
+# pip install flask
+# pip install python-dotenv
+
 from flask import Flask, request
 from gemini_api import generate_content
 app = Flask(__name__)
