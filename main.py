@@ -11,7 +11,7 @@ app = Flask(__name__)
 def chat():
     user_data = request.json
     user_prompt = user_data["prompt"]
-    print("request.json content is: ", user_prompt)
+    # print("request.json content is: ", user_prompt)
     response = generate_content(user_prompt=user_prompt)
     return response
 

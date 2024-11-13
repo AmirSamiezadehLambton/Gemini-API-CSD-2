@@ -1,0 +1,4 @@
+*.env
+*.key
+*.pem
+markdown_sample.md
