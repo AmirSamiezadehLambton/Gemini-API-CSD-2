@@ -17,12 +17,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Main Image
-        run: docker build -t $IMAGE_TAG_MAIN:$IMAGE_VERSION -f Dockerfile .
+        run: docker build -t ${IMAGE_TAG_MAIN}:${IMAGE_VERSION} -f Dockerfile .
 
       - name: Build Test Image
         run: |
           mv .dockerignore .dockerignore.temp
-          docker build -t IMAGE_TAG_TEST:$IMAGE_VERSION -f DockerfileTest .
+          docker build -t ${IMAGE_TAG_TEST}:${IMAGE_VERSION} -f DockerfileTest .
           mv dockerignore.temp .dockerignore
 
   test_job:
@@ -34,7 +34,7 @@ jobs:
         run: |
           docker run --rm \
             -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
-            IMAGE_TAG_TEST:$IMAGE_VERSION
+            ${IMAGE_TAG_TEST}:${IMAGE_VERSION}
           
 
   deploy_job:
@@ -43,9 +43,9 @@ jobs:
     environment: development
     steps:
       - name: Remove Running Containers
-        run: docker rm -f $IMAGE_TAG_MAIN || true
+        run: docker rm -f ${IMAGE_TAG_MAIN} || true
 
       - name: Deploy Main Image
-        run: docker run -d -p 5001:5001 -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} --name $IMAGE_TAG_MAIN $IMAGE_TAG_MAIN:$IMAGE_VERSION
+        run: docker run -d -p 5001:5001 -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} --name ${IMAGE_TAG_MAIN} ${IMAGE_TAG_MAIN}:${IMAGE_VERSION}
 
 
