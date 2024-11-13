@@ -1,0 +1,51 @@
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_TAG_MAIN: geminiapi
+  IMAGE_TAG_TEST: geminiapitest
+  IMAGE_VERSION: v1.0.0
+
+jobs:
+  build_job:
+    name: Build Docker Image
+    runs-on: gemini-win-runner
+    steps:
+      - name: Clone and checkout
+        uses: actions/checkout@v2
+
+      - name: Build Main Image
+        uses: docker build -t $IMAGE_TAG_MAIN:$IMAGE_VERSION -f Dockerfile .
+
+      - name: Build Test Image
+        uses: |
+          mv .dockerignore .dockerignore.temp
+          docker build -t IMAGE_TAG_TEST:$IMAGE_VERSION -f DockerfileTest .
+          mv dockerignore.temp .dockerignore
+
+  test_job:
+    name: Test Docker Image
+    runs-on: gemini-win-runner
+    environment: development
+    steps:
+      - name: Unit testing
+        uses: |
+          docker run --rm \
+            -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
+            IMAGE_TAG_TEST:$IMAGE_VERSION
+          
+
+  deploy_job:
+    name: Deploy Docker Image
+    runs-on: gemini-win-runner
+    environment: development
+    steps:
+      - name: Remove Running Containers
+        uses: docker rm -f $IMAGE_TAG_MAIN || true
+
+      - name: Deploy Main Image
+        uses: docker run -d -p 5001:5001 -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} --name $IMAGE_TAG_MAIN $IMAGE_TAG_MAIN:$IMAGE_VERSION
+
+
