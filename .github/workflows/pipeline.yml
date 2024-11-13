@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build Main Image
-        run: docker build -t ${IMAGE_TAG_MAIN}:${IMAGE_VERSION} -f Dockerfile .
+        run: docker build -t $IMAGE_TAG_MAIN:$IMAGE_VERSION -f Dockerfile .
 
       - name: Build Test Image
         run: |
